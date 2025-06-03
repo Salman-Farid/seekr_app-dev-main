@@ -1,0 +1,7 @@
+ {error: local variable 'final_output' referenced before assignment, traceback: Traceback (most recent call last):
+  File "/ymca/main.py", line 41, in giveDepthEstimation
+    output = Pred.prediction(model, img_array, lang)
+  File "/ymca/prediction.py", line 55, in prediction
+    return json.dumps(final_output[lang])
+UnboundLocalError: local variable 'final_output' referenced before assignment
+}

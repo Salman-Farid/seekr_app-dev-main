@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "146426615213",
+    "project_id": "seekr-hk",
+    "storage_bucket": "seekr-hk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146426615213:android:415bffa6d8199691c5bd24",
+        "android_client_info": {
+          "package_name": "com.vidilabs.seekr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "146426615213-kb1grdaennfmf0fmpdpu9eianf6ihg84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekr",
+            "certificate_hash": "646cea236c8adf1b31c95153382c69b1e8fc6fc3"
+          }
+        },
+        {
+          "client_id": "146426615213-nu9cltgcg3d35ihn2h0n1faf9fsvl225.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekr",
+            "certificate_hash": "d6aa867bd1a328ce425d83d5040f044b56022594"
+          }
+        },
+        {
+          "client_id": "146426615213-nuh1b6rf1458nbgmm25douvdib7l5uso.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekr",
+            "certificate_hash": "3f280dfb023f8940e7ff16c8fc85469c3255f085"
+          }
+        },
+        {
+          "client_id": "146426615213-lb0aqq1ugsc9688odi3f15t0iolkh867.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6Odc8bwb6r_uupr_itEE-B7u9XwIQPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "146426615213-lb0aqq1ugsc9688odi3f15t0iolkh867.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "146426615213-3t8hpbbp8473m1b0utiho75bla17k0fh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vidilabs.seekrhk"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146426615213:android:31cd2427fd45531dc5bd24",
+        "android_client_info": {
+          "package_name": "com.vidilabs.seekrapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "146426615213-473ja0akthhn0c3o8oppi6v3lhmgno33.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "4c05bbe595d2ccfe6cd9d7a2cac8f2545ce35db5"
+          }
+        },
+        {
+          "client_id": "146426615213-7r3p8777rnati6s46do6tdrhgj96qq4j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "103df3d0a81c688f2e32d201086dda6c0378c357"
+          }
+        },
+        {
+          "client_id": "146426615213-9ros62q2ns2dcosm6nimuta2sh7bk1s1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "646cea236c8adf1b31c95153382c69b1e8fc6fc3"
+          }
+        },
+        {
+          "client_id": "146426615213-eptnrskd2s6rp0bapnkeold9gf68hken.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "79e8ac6bf2977184778223b0b069107400d298e1"
+          }
+        },
+        {
+          "client_id": "146426615213-fc48nntpn4rdbvi6hgogaucl7t6uusse.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "ee9573a562979c3d7f29d0fc5a6b564233eb0a5d"
+          }
+        },
+        {
+          "client_id": "146426615213-lsnebvi2g93r7qmrnnn2cii2dc9355g9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "1c103276e8f38b7b0f53d426e187f55f25afa596"
+          }
+        },
+        {
+          "client_id": "146426615213-st05ption408t8qrl2eptvqnu12p95qf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vidilabs.seekrapp",
+            "certificate_hash": "3f280dfb023f8940e7ff16c8fc85469c3255f085"
+          }
+        },
+        {
+          "client_id": "146426615213-lb0aqq1ugsc9688odi3f15t0iolkh867.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6Odc8bwb6r_uupr_itEE-B7u9XwIQPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "146426615213-lb0aqq1ugsc9688odi3f15t0iolkh867.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "146426615213-3t8hpbbp8473m1b0utiho75bla17k0fh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vidilabs.seekrhk"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

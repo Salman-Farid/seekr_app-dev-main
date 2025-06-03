@@ -1,0 +1,30 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "seekr-hk",
+                    "appId": "1:146426615213:android:415bffa6d8199691c5bd24",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "seekr-hk",
+                    "appId": "1:146426615213:ios:66a7f978b7d75dcfc5bd24",
+                    "uploadDebugSymbols": true,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "seekr-hk",
+                    "configurations": {
+                        "android": "1:146426615213:android:415bffa6d8199691c5bd24",
+                        "ios": "1:146426615213:ios:66a7f978b7d75dcfc5bd24"
+                    }
+                }
+            }
+        }
+    }
+}

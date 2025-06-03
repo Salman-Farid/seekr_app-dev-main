@@ -1,0 +1,77 @@
+{
+  "es": [
+    "museumbuttonDevice",
+    "walkingModeButton"
+  ],
+
+  "ja": [
+    "museumbuttonDevice",
+    "walkingModeButton"
+  ],
+
+  "ko": [
+    "museumbuttonDevice",
+    "walkingModeButton"
+  ],
+
+  "ms": [
+    "museumbuttonDevice",
+    "walkingModeButton",
+    "seekrDevice"
+  ],
+
+  "tl": [
+    "museumbuttonDevice",
+    "walkingModeButton",
+    "seekrDevice"
+  ],
+
+  "zh": [
+    "autoRead",
+    "autoReadButton",
+    "batteryStatus",
+    "errorOccured",
+    "museumbuttonDevice",
+    "replay",
+    "compressingImage",
+    "automaticVoicePlayback",
+    "enableCameraPreview",
+    "goBack",
+    "changeDeviceName",
+    "restartDeviceChangeSSID",
+    "textSize",
+    "textSizeNormal",
+    "textSizeLarge",
+    "textSizeExtraLarge",
+    "change",
+    "deviceBattery100",
+    "deviceBattery70",
+    "deviceBattery50",
+    "deviceBattery25",
+    "deviceBatteryLow",
+    "deviceBatteryCharging",
+    "superMarketModeDevice",
+    "cameraTab",
+    "cameraTabSelected",
+    "deviceTab",
+    "deviceTabSelected",
+    "settingsTab",
+    "settingsTabSelected",
+    "requiredCameraPermission",
+    "requiredLocationPermission",
+    "requestCameraPermission",
+    "requestLocationPermission",
+    "connectToInternet",
+    "youAreOffline",
+    "walkingModeButton",
+    "seekrDevice"
+  ],
+
+  "zh_Hans_CN": [
+    "walkingModeButton"
+  ],
+
+  "zh_Hant_HK": [
+    "walkingModeButton"
+  ]
+}

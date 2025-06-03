@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>146426615213-lg88i6152ci68dk1sia8kdh1sbnr99qm.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.146426615213-lg88i6152ci68dk1sia8kdh1sbnr99qm</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>146426615213-473ja0akthhn0c3o8oppi6v3lhmgno33.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBbRmU5vYTixBfIuX7wznrglOTwPfVh65k</string>
+	<key>GCM_SENDER_ID</key>
+	<string>146426615213</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.vidiseekr.SeekrInternal</string>
+	<key>PROJECT_ID</key>
+	<string>seekr-hk</string>
+	<key>STORAGE_BUCKET</key>
+	<string>seekr-hk.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:146426615213:ios:66a7f978b7d75dcfc5bd24</string>
+</dict>
+</plist>
