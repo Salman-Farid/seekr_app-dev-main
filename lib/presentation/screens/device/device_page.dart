@@ -22,8 +22,7 @@ class DevicePage extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final lifeCycleState = useAppLifecycleState();
     final state = ref.watch(deviceStateProvider);
-    final size = MediaQuery.of(context).size;
-    final loadingDeviceConnection = useState(false);
+    var size = MediaQuery.of(context).size;
     useOnAppLifecycleStateChange((previous, current) async {
       Logger.w('State changed from $previous to: $current');
       ref.read(appStateProvider.notifier).state = current;
@@ -52,12 +51,12 @@ class DevicePage extends HookConsumerWidget {
             }
           }
         } else if (next is DisconnectedState) {
-          //Commented out this part of code because it's overlap with the background audio (Ahnaf)
-          // if (lifeCycleState == AppLifecycleState.resumed && enableTTs) {
-          //   ref
-          //       .read(audioRepoProvider)
-          //       .playText(text: 'Disconnected from device');
-          // }
+          //Commented out this part of code because it's overlap with the background audio
+          if (lifeCycleState == AppLifecycleState.resumed && enableTTs) {
+            ref
+                .read(audioRepoProvider)
+                .playText(text: 'Disconnected from device');
+          }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
               Words.of(context)!.disconnectedFromDevice,
@@ -88,7 +87,7 @@ class DevicePage extends HookConsumerWidget {
                                 ref.read(deviceRepoProvider).deleteAllPhotos(),
                             child:
                                 const Icon(CupertinoIcons.camera_viewfinder)),
-                        Text(Words.of(context)!.seekrDevice),
+                        Text(Words.of(context)!.deviceButton),
                       ],
                     ),
                   ),
@@ -165,7 +164,6 @@ class DevicePage extends HookConsumerWidget {
               children: [
                 Text(
                   Words.of(context)!.deviceIsDisconnected,
-                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Rounded_Elegance',
@@ -175,51 +173,20 @@ class DevicePage extends HookConsumerWidget {
                   height: 10,
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      loadingDeviceConnection.value = true;
-
-                      await ref
-                          .read(deviceStateProvider.notifier)
-                          .checkManually();
-                      loadingDeviceConnection.value = false;
+                    onPressed: () {
+                      ref.read(deviceStateProvider.notifier).checkManually();
                     },
-                    child: loadingDeviceConnection.value
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator())
-                        : Text(Words.of(context)!.checkDeviceConnectionStatus,))
+                    child: const Text('Try connecting to device'))
               ],
             ));
           case ErrorState():
             return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'We lost connection to the device',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Rounded_Elegance',
-                        fontSize: size.width * .065),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        loadingDeviceConnection.value = true;
-
-                        await ref
-                            .read(deviceStateProvider.notifier)
-                            .checkManually();
-                        loadingDeviceConnection.value = false;
-                      },
-                      child: loadingDeviceConnection.value
-                          ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator())
-                          : Text(Words.of(context)!.checkDeviceConnectionStatus))
-                ],
+              child: Text(
+                'Error Occurred when testing device connect:\n${state.error}',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Rounded_Elegance',
+                    fontSize: size.width * .065),
               ),
             );
           case UncheckedState():
@@ -229,7 +196,6 @@ class DevicePage extends HookConsumerWidget {
               children: [
                 Text(
                   Words.of(context)!.deviceIsDisconnected,
-                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Rounded_Elegance',
@@ -239,18 +205,10 @@ class DevicePage extends HookConsumerWidget {
                   height: 10,
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      loadingDeviceConnection.value = true;
-                      await ref
-                          .read(deviceStateProvider.notifier)
-                          .checkManually();
-                      loadingDeviceConnection.value = false;
+                    onPressed: () {
+                      ref.read(deviceStateProvider.notifier).checkManually();
                     },
-                    child: loadingDeviceConnection.value
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator())
-                        : Text(Words.of(context)!.checkDeviceConnectionStatus)),
+                    child: const Text('Try connecting to device'))
               ],
             ));
         }

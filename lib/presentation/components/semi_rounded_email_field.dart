@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
-class SemiRoundedEmailField extends HookWidget {
+class SemiRoundedEmailField extends StatelessWidget {
   final TextEditingController emailController;
   final String hint;
   final bool enabled;
-  final FocusNode? focusNode;
-  final void Function(String)? onFieldSubmitted;
 
   const SemiRoundedEmailField(
       {super.key,
       required this.emailController,
       required this.hint,
-      this.focusNode,
-      this.onFieldSubmitted,
       this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      focusNode: focusNode,
       enabled: enabled,
       validator: (value) {
         Pattern pattern = r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+';
@@ -30,7 +24,6 @@ class SemiRoundedEmailField extends HookWidget {
           return null;
         }
       },
-      onFieldSubmitted: onFieldSubmitted,
       controller: emailController,
       decoration: InputDecoration(
         hintText: hint,

@@ -2,7 +2,6 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,13 +26,7 @@ class LoginScreenBody extends HookConsumerWidget {
     final passwordController = useTextEditingController();
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final loading = useState(false);
-    final emailFocusNode = useFocusNode();
-    final size = MediaQuery.of(context).size;
-    final emailKey = useMemoized(() => GlobalKey(debugLabel: 'emailKey'));
-    final passwordKey = useMemoized(() => GlobalKey(debugLabel: 'passwordKey'));
-    final passwordFocusNode = useFocusNode();
-
-    final loginKey = useMemoized(() => GlobalKey(debugLabel: 'loginKey'));
+    Size size = MediaQuery.of(context).size;
     return Background(
       child: Column(
         // mainAxisAlignment: MainAxisAlignment.start,
@@ -68,17 +61,9 @@ class LoginScreenBody extends HookConsumerWidget {
                               horizontal: 20,
                             ),
                             child: Semantics(
-                              key: emailKey,
                               label: Words.of(context)!.yourEmail,
                               child: ExcludeSemantics(
                                 child: SemiRoundedEmailField(
-                                  focusNode: emailFocusNode,
-                                  onFieldSubmitted: (value) {
-                                    passwordKey.currentContext
-                                        ?.findRenderObject()
-                                        ?.sendSemanticsEvent(
-                                            const FocusSemanticEvent());
-                                  },
                                   emailController: emailController,
                                   enabled: !loading.value,
                                   hint: Words.of(context)!.emailPlaceHolder,
@@ -93,23 +78,18 @@ class LoginScreenBody extends HookConsumerWidget {
                             horizontal: 20,
                           ),
                           child: Semantics(
-                            key: passwordKey,
                             label: Words.of(context)!.yourPassword,
-                            child: SemiRoundedPasswordField(
-                                focusNode: passwordFocusNode,
-                                onFieldSubmitted: (value) {
-                                  loginKey.currentContext
-                                      ?.findRenderObject()
-                                      ?.sendSemanticsEvent(
-                                          const FocusSemanticEvent());
-                                },
-                                enabled: !loading.value,
-                                hideLabel:
-                                    Words.of(context)!.buttonHidePassword,
-                                showLabel:
-                                    Words.of(context)!.buttonShowPassword,
-                                passwordController: passwordController,
-                                text: Words.of(context)!.password),
+                            textField: false,
+                            child: ExcludeSemantics(
+                              child: SemiRoundedPasswordField(
+                                  enabled: !loading.value,
+                                  hideLabel:
+                                      Words.of(context)!.buttonHidePassword,
+                                  showLabel:
+                                      Words.of(context)!.buttonShowPassword,
+                                  passwordController: passwordController,
+                                  text: Words.of(context)!.password),
+                            ),
                           ),
                         ),
                         Align(
@@ -151,7 +131,6 @@ class LoginScreenBody extends HookConsumerWidget {
                       left: size.width * 0.2,
                       right: size.width * 0.2),
                   child: Semantics(
-                    key: loginKey,
                     label: Words.of(context)!.logInButton,
                     child: ExcludeSemantics(
                       child: RoundedButton(

@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:seekr_app/application/device/device_provider.dart';
 import 'package:seekr_app/application/device/mock_socket.dart';
-import 'package:seekr_app/main.dart';
 
 final socketProvider = AutoDisposeFutureProvider<Socket>((ref) async {
-  if (useFakeDevice) {
+  final deviceState = ref.watch(deviceStateProvider);
+  if (deviceState.isFake) {
     return MockSocket.connect('local', 123);
   }
   return Socket.connect('192.168.1.254', 3333);

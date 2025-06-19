@@ -2,7 +2,6 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -27,11 +26,8 @@ class SignupBody extends HookConsumerWidget {
     final passwordController = useTextEditingController();
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final loading = useState(false);
-    final loginKey = useMemoized(() => GlobalKey(debugLabel: 'loginKey'));
 
-    final passwordKey = useMemoized(() => GlobalKey(debugLabel: 'passwordKey'));
-    final passwordFocusNode = useFocusNode();
-    final Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return Background(
       child: loading.value
           ? const Center(
@@ -58,16 +54,9 @@ class SignupBody extends HookConsumerWidget {
                           Semantics(
                             label: Words.of(context)!.yourEmail,
                             child: ExcludeSemantics(
-                              child: Focus(
-                                onFocusChange: (hasFocus) {
-                                  if (!hasFocus) {
-                                    FocusScope.of(context).unfocus();
-                                  }
-                                },
-                                child: SemiRoundedEmailField(
-                                  hint: Words.of(context)!.emailPlaceHolder,
-                                  emailController: emailController,
-                                ),
+                              child: SemiRoundedEmailField(
+                                hint: Words.of(context)!.emailPlaceHolder,
+                                emailController: emailController,
                               ),
                             ),
                           ),
@@ -75,23 +64,17 @@ class SignupBody extends HookConsumerWidget {
                             height: 10,
                           ),
                           Semantics(
-                            key: passwordKey,
                             label: Words.of(context)!.yourPassword,
-                            child: SemiRoundedPasswordField(
-                                passwordController: passwordController,
-                                focusNode: passwordFocusNode,
-                                onFieldSubmitted: (value) {
-                                  loginKey.currentContext
-                                      ?.findRenderObject()
-                                      ?.sendSemanticsEvent(
-                                          const FocusSemanticEvent());
-                                },
-                                enabled: !loading.value,
+                            child: ExcludeSemantics(
+                              child: SemiRoundedPasswordField(
                                 hideLabel:
                                     Words.of(context)!.buttonHidePassword,
                                 showLabel:
                                     Words.of(context)!.buttonShowPassword,
-                                text: Words.of(context)!.password),
+                                passwordController: passwordController,
+                                text: Words.of(context)!.passwordPlaceHolder,
+                              ),
+                            ),
                           ),
                           ConstrainedBox(
                             constraints:
@@ -99,7 +82,6 @@ class SignupBody extends HookConsumerWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Semantics(
-                                key: loginKey,
                                 label: Words.of(context)!.signUpButton,
                                 child: ExcludeSemantics(
                                   child: RoundedButton(

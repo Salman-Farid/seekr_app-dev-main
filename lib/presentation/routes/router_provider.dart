@@ -5,28 +5,23 @@ import 'package:seekr_app/application/auth_provider.dart';
 import 'package:seekr_app/application/connectivity/connectivity_provider.dart';
 import 'package:seekr_app/application/permission/permission_provider.dart';
 import 'package:seekr_app/application/permission/permission_state.dart';
-import 'package:seekr_app/application/analytics/talker_provider.dart';
+import 'package:seekr_app/application/talker_provider.dart';
 import 'package:seekr_app/domain/image_process/image_process_data.dart';
 import 'package:seekr_app/domain/image_process/image_process_page_param.dart';
-import 'package:seekr_app/main.dart';
 import 'package:seekr_app/presentation/screens/camera/camera_bus_detection_page.dart';
-import 'package:seekr_app/presentation/screens/camera/camera_document_detection_page.dart';
-import 'package:seekr_app/presentation/screens/camera/camera_obstacle_avoidance_page.dart';
 import 'package:seekr_app/presentation/screens/camera/camera_page.dart';
 import 'package:seekr_app/presentation/screens/auth/login/login_screen.dart';
 import 'package:seekr_app/presentation/screens/auth/selection/selection_screen.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:seekr_app/presentation/screens/device/live/device_live_detection_page.dart';
+import 'package:seekr_app/presentation/screens/camera/device_bus_detection_page.dart';
 import 'package:seekr_app/presentation/screens/camera/image_process_page.dart';
 import 'package:seekr_app/presentation/screens/camera/reuse_camera_page.dart';
-import 'package:seekr_app/presentation/screens/chat/chat_screen.dart';
 import 'package:seekr_app/presentation/screens/connectivity/no_camera_permission_page.dart';
 import 'package:seekr_app/presentation/screens/connectivity/no_location_permission_page.dart';
 import 'package:seekr_app/presentation/screens/connectivity/no_network_page.dart';
 import 'package:seekr_app/presentation/screens/device/device_page.dart';
-import 'package:seekr_app/presentation/screens/history/history_page.dart';
 import 'package:seekr_app/presentation/screens/museum/museum_list_page.dart';
 import 'package:seekr_app/presentation/screens/museum/museum_processing_page.dart';
 import 'package:seekr_app/presentation/screens/others/permission_screen.dart';
@@ -34,18 +29,18 @@ import 'package:seekr_app/presentation/screens/others/splash_screen.dart';
 import 'package:seekr_app/presentation/screens/root_page.dart';
 import 'package:seekr_app/presentation/screens/settings/package_plan_sheet.dart';
 import 'package:seekr_app/presentation/screens/settings/settings_page.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorCameraKey =
     GlobalKey<NavigatorState>(debugLabel: 'camrea');
-final _shellNavigatorChatKey = GlobalKey<NavigatorState>(debugLabel: 'chat');
 final _shellNavigatorDeviceKey =
     GlobalKey<NavigatorState>(debugLabel: 'device');
 
 final _shellNavigatorSettingsKey =
     GlobalKey<NavigatorState>(debugLabel: 'settings');
 
-final _shellNavigatorLiveKey = GlobalKey<NavigatorState>(debugLabel: 'live');
+final _shellNavigatorBusKey = GlobalKey<NavigatorState>(debugLabel: 'bus');
 
 final routerProvider = Provider<GoRouter>((ref) {
   final permissionState = ref.watch(permissionProvider);
@@ -53,7 +48,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final networkAvailableState = ref.watch(connectedToAnyProvider);
   return GoRouter(
     observers: [
-      ref.read(analyticsObserverProvider),
+      TalkerRouteObserver(ref.read(talkerProvider)),
     ],
     debugLogDiagnostics: true,
     navigatorKey: rootNavigatorKey,
@@ -85,15 +80,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         child: NoLocationPermissionPage()),
                   ),
                 ]),
-            StatefulShellBranch(navigatorKey: _shellNavigatorChatKey, routes: [
-              GoRoute(
-                path: ChatBotPage.routePath,
-                name: ChatBotPage.routeName,
-                pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: ChatBotPage()),
-              ),
-            ]),
-            if (Platform.isIOS || useFakeDevice)
+            if (Platform.isIOS)
               StatefulShellBranch(
                   navigatorKey: _shellNavigatorDeviceKey,
                   routes: [
@@ -102,18 +89,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: DevicePage.routeName,
                       pageBuilder: (context, state) =>
                           const NoTransitionPage(child: DevicePage()),
-                    ),
-                  ]),
-            if (Platform.isIOS)
-              StatefulShellBranch(
-                  navigatorKey: _shellNavigatorLiveKey,
-                  routes: [
-                    GoRoute(
-                      path: LiveDetectionPage.routePath,
-                      name: LiveDetectionPage.routeName,
-                      builder: (context, state) {
-                        return const LiveDetectionPage();
-                      },
                     ),
                   ]),
             StatefulShellBranch(
@@ -126,21 +101,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                         const NoTransitionPage(child: SettingsPage()),
                   ),
                 ]),
+            if (Platform.isIOS)
+              StatefulShellBranch(navigatorKey: _shellNavigatorBusKey, routes: [
+                GoRoute(
+                  path: DeviceBusDetectionPage.routePath,
+                  name: DeviceBusDetectionPage.routeName,
+                  builder: (context, state) {
+                    return const DeviceBusDetectionPage();
+                  },
+                ),
+              ]),
           ]),
-      GoRoute(
-        path: CameraObstacleAvoidancePage.routePath,
-        name: CameraObstacleAvoidancePage.routeName,
-        builder: (context, state) {
-          return const CameraObstacleAvoidancePage();
-        },
-      ),
-      GoRoute(
-        path: CameraDocumentDetectionPage.routePath,
-        name: CameraDocumentDetectionPage.routeName,
-        builder: (context, state) {
-          return const CameraDocumentDetectionPage();
-        },
-      ),
       GoRoute(
         path: CameraBusDetectionPage.routePath,
         name: CameraBusDetectionPage.routeName,
@@ -224,13 +195,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           return const MuseumProcessingPage();
         },
       ),
-      GoRoute(
-        path: UserHistoryPage.routePath,
-        name: UserHistoryPage.routeName,
-        builder: (context, state) {
-          return const UserHistoryPage();
-        },
-      ),
+      // GoRoute(
+      //   path: DeviceResultPage.routePath,
+      //   name: DeviceResultPage.routeName,
+      //   builder: (context, state) {
+      //     Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+      //     return DeviceResultPage(
+      //         text: extra['text'] as String,
+      //         processType: extra['processType'] as ProcessType);
+      //   },
+      // ),
     ],
     redirect: (context, state) {
       final currentPath = state.uri.path;

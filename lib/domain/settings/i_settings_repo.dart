@@ -14,13 +14,7 @@ abstract class ISettingsRepo {
   String getLangCodeForLocale();
   String getLangCodeForOcr();
 
- Future<String> translateTextHybrid(
-      {required String source, required bool shouldTranslate});
-
   Future<String> translateText(
-      {required String source, required bool shouldTranslate});
-
-  Future<String> translateTextWithDeepl(
       {required String source, required bool shouldTranslate});
 
   Pitch getPitch();

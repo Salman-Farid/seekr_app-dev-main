@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:seekr_app/domain/device/device_action_type.dart';
@@ -167,5 +168,20 @@ class DeviceRepo extends IDeviceRepo {
   @override
   Future<void> switchToVGAResMode() async {
     await dio.get('/?custom=1&cmd=1002&par=6');
+  }
+
+  @override
+  Future<File> getPhotoFromFakeDevice() {
+    final picker = ImagePicker();
+    return picker.pickImage(source: ImageSource.gallery).then((value) async {
+      if (value != null) {
+        final file = File(value.path);
+        final newFile = await file.copy(
+            '${(await getTemporaryDirectory()).path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        return newFile;
+      } else {
+        throw Exception('No image selected');
+      }
+    });
   }
 }

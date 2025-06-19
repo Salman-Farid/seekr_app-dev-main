@@ -1,37 +1,84 @@
-// import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:talker/talker.dart';
+// import 'package:flutter_easylogger/flutter_logger.dart';
+// import 'package:seekr_app/domain/event/event.dart';
+// import 'package:seekr_app/domain/event/event_log.dart';
+// import 'package:talker/talker.dart';
+// import 'package:http/http.dart' as http;
 
-class SeekrTalkerObserver extends TalkerObserver {
-  @override
-  void onError(TalkerError err) async {
-    FirebaseCrashlytics.instance.recordError(
-      err.error,
-      err.stackTrace,
-      reason: err.message,
-    );
-  }
+// class SeekrTalkerObserver extends TalkerObserver {
+//   final String? session;
+//   // final Posi
+//   SeekrTalkerObserver({
+//     required this.session,
+//   });
 
-  @override
-  void onException(TalkerException err) async {
-    FirebaseCrashlytics.instance.recordError(
-      err.exception,
-      err.stackTrace,
-      reason: err.message,
-    );
-  }
+//   @override
+//   void onError(TalkerError err) async {
+//     if (session != null) {
+//       final eventLog = EventLog(
+//         session: session!,
+//         event: Event(
+//           title: err.title ?? 'Error',
+//           details: err.generateTextMessage(),
+//         ).toMap(),
+//       );
+//       final response = await http.post(
+//           Uri.parse('https://seekr-analytics.squadhead.workers.dev/event'),
+//           headers: <String, String>{
+//             'Content-Type': 'application/json; charset=UTF-8',
+//           },
+//           body: eventLog.toJson());
+//       if (response.statusCode != 200) {
+//         Logger.e(response.body);
+//       }
+//     }
+//     super.onError(err);
+//   }
 
-  @override
-  void onLog(TalkerData log) async {
-    final analytics = FirebaseAnalytics.instance;
-    analytics.logEvent(
-      name: log.title?.replaceAll('-', '_') ?? 'log',
-      parameters: {
-        if (log.key != null) 'key': log.key!,
-        if (log.logLevel != null) 'level': log.logLevel!.name,
-        'message': log.generateTextMessage(),
-      },
-    );
-  }
-}
+//   @override
+//   void onException(TalkerException err) async {
+//     if (session != null) {
+//       final eventLog = EventLog(
+//         session: session!,
+//         event: Event(
+//                 title: err.title ?? 'Exception',
+//                 details: err.generateTextMessage())
+//             .toMap(),
+//       );
+//       final response = await http.post(
+//           Uri.parse('https://seekr-analytics.squadhead.workers.dev/event'),
+//           headers: <String, String>{
+//             'Content-Type': 'application/json; charset=UTF-8',
+//           },
+//           body: eventLog.toJson());
+//       if (response.statusCode != 200) {
+//         Logger.e(response.body);
+//       }
+//     }
+
+//     super.onException(err);
+//   }
+
+//   @override
+//   void onLog(TalkerData log) async {
+//     if (session != null) {
+//       final eventLog = EventLog(
+//         session: session!,
+//         event:
+//             Event(title: log.title ?? 'Log', details: log.generateTextMessage())
+//                 .toMap(),
+//       );
+
+//       final response = await http.post(
+//           Uri.parse('https://seekr-analytics.squadhead.workers.dev/event'),
+//           headers: <String, String>{
+//             'Content-Type': 'application/json; charset=UTF-8',
+//           },
+//           body: eventLog.toJson());
+//       if (response.statusCode != 200) {
+//         Logger.e(response.body);
+//       }
+//     }
+
+//     super.onLog(log);
+//   }
+// }

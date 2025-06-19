@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:deepl_dart/deepl_dart.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:seekr_app/domain/settings/i_settings_repo.dart';
@@ -12,7 +11,6 @@ import 'package:translator_plus/translator_plus.dart';
 class SettingsRepo extends ISettingsRepo {
   final SharedPreferences _sharedPreferences;
   final GoogleTranslator translator = GoogleTranslator();
-  final deepl = DeepL(authKey: "3be792f0-6f11-4a98-84c7-77d04c569487:fx");
 
   SettingsRepo({required SharedPreferences sharedPreferences})
       : _sharedPreferences = sharedPreferences;
@@ -121,22 +119,20 @@ class SettingsRepo extends ISettingsRepo {
   @override
   List<Locale> getLocales() {
     const locales = [
-      Locale('en', 'US'), // English
+      Locale('en', 'US'),
       Locale.fromSubtags(
         languageCode: 'zh',
         scriptCode: 'Hant',
         countryCode: 'HK',
-      ), // Traditional Chinese
+      ),
       Locale.fromSubtags(
         languageCode: 'zh',
         scriptCode: 'Hans',
         countryCode: 'CN',
-      ), // Simplified Chinese
+      ),
+      // Locale.fromSubtags(languageCode: 'zh'),
       Locale('es', 'ES'), // Spanish
       Locale('ja', 'JP'), // Japanese
-      Locale('ko', 'KR'), // Korean
-      Locale('tl', 'PH'), // Tagalog
-      Locale('ms', 'MY'), // Malay
     ];
     return locales;
   }
@@ -148,19 +144,13 @@ class SettingsRepo extends ISettingsRepo {
     if (locale == locales[0]) {
       return 'English';
     } else if (locale == locales[1]) {
-      return '廣東話';
+      return '繁體';
     } else if (locale == locales[2]) {
-      return '普通话';
+      return '简体';
     } else if (locale == locales[3]) {
       return 'Español';
     } else if (locale == locales[4]) {
       return '日本語';
-    } else if (locale == locales[5]) {
-      return '한국어'; // Korean
-    } else if (locale == locales[6]) {
-      return 'Tagalog';
-    } else if (locale == locales[7]) {
-      return 'Malay';
     } else {
       return '简体';
     }
@@ -186,43 +176,8 @@ class SettingsRepo extends ISettingsRepo {
   }
 
   @override
-  Future<String> translateTextHybrid(
-      {required String source, required bool shouldTranslate}) async {
-    if (shouldTranslate) {
-      final langCode = getLangCodeForLocale();
-      Logger.i('✅✅ Hybrid Translation is used for langCode: $langCode');
-
-      if (langCode != 'en_US') {
-        // Use Google Translate for Tagalog and Malay
-        if (langCode == 'tl_PH' || langCode == 'ms_MY') {
-          final language = langCode.split('_').first.toLowerCase();
-          Logger.i('Using Google Translate for language code: $language');
-          final translation = await translator.translate(source, to: language);
-          return translation.text;
-        }
-
-        // Use DeepL for all other languages
-        final language = langCode.toLowerCase().contains('zh')
-            ? langCode == 'zh_HK'
-                ? 'ZH-HANT'
-                : 'ZH-HANS'
-            : langCode.split('_').first.toUpperCase();
-        final result = await deepl.translate.translateText(source, language);
-        Logger.i('Using DeepL for language code: $language, result: $result');
-
-        return result.text;
-      }
-      Logger.i(
-          'No translation needed for langCode: $langCode, returning source: $source');
-      return source;
-    }
-    return source;
-  }
-
-  @override
   Future<String> translateText(
       {required String source, required bool shouldTranslate}) async {
-    Logger.i('Using google translation');
     if (shouldTranslate) {
       final langCode = getLangCodeForLocale();
       if (langCode != 'en_US') {
@@ -236,38 +191,9 @@ class SettingsRepo extends ISettingsRepo {
         final translation = await translator.translate(source, to: language);
         return translation.text;
       }
-      Logger.i(
-          'No translation needed for langCode: $langCode, returning source: $source');
       return source;
     }
     return source;
-  }
-
-  @override
-  Future<String> translateTextWithDeepl(
-      {required String source, required bool shouldTranslate}) async {
-    Logger.i('Using DeepL for translation');
-    final langCode = getLangCodeForLocale();
-
-    if (shouldTranslate) {
-      if (langCode != 'en_US') {
-        final language = langCode.toLowerCase().contains('zh')
-            ? langCode == 'zh_HK'
-                ? 'ZH-HANT'
-                : 'ZH-HANS'
-            : langCode.split('_').first.toUpperCase();
-        Logger.i(
-            'Translation language code: $language for langCode: $langCode');
-        final result = await deepl.translate.translateText(source, language);
-        return result.text;
-      }
-      return source;
-    } else {
-      Logger.i(
-          'No translation needed for langCode: $langCode, returning source: $source');
-
-      return source;
-    }
   }
 
   @override

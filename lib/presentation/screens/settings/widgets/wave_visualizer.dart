@@ -45,8 +45,8 @@ class WaveVisualizer extends StatelessWidget {
                     duration: duration[index % 5],
                     initialHeight: isPaused ? initialHeight[index % 5] : null,
                     color: index % 2 == 0
-                        ? color.withValues(alpha: 0.1)
-                        : color.withValues(alpha: 0.3),
+                        ? color.withOpacity(0.1)
+                        : color.withOpacity(0.03),
                   ),
                 ),
               ),
@@ -54,7 +54,7 @@ class WaveVisualizer extends StatelessWidget {
                   ? Center(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
+                          color: color.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         width: double.maxFinite,
@@ -83,9 +83,7 @@ class WaveVisualizer extends StatelessWidget {
                         duration: duration[index % 5],
                         initialHeight:
                             isPaused ? initialHeight[index % 5] : null,
-                        color: index % 2 == 0
-                            ? color
-                            : color.withValues(alpha: 0.3),
+                        color: index % 2 == 0 ? color : color.withOpacity(0.3),
                       ),
                     ),
                   ),

@@ -26,7 +26,7 @@ class SeekrApp extends ConsumerWidget {
                 child: child!,
               )),
       supportedLocales:
-          ref.watch(settingsRepoProvider).valueOrNull?.getLocales() ??
+          ref.watch(localizationRepoProvider).valueOrNull?.getLocales() ??
               [const Locale('en', 'US')],
       locale: ref.watch(settingsProvider).valueOrNull?.locale,
       localizationsDelegates: Words.localizationsDelegates,

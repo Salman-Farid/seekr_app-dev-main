@@ -1,7 +1,7 @@
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:seekr_app/application/session_provider.dart';
+import 'package:seekr_app/application/talker_provider.dart';
 import 'package:seekr_app/domain/event/api_event_log.dart';
 import 'package:seekr_app/domain/event/event_log.dart';
 import 'package:seekr_app/domain/image_process/image_process_data.dart';
@@ -9,7 +9,7 @@ import 'package:seekr_app/domain/image_process/image_process_data.dart';
 typedef EventFunc = Future<void> Function(ApiEventLog apiLog);
 
 final apiLogFuncProvider = Provider<EventFunc>((ref) {
-  final session = ref.watch(sessionIdProvider);
+  final session = ref.watch(sessionProvider).value;
   ProcessType? getProcessType(String url) {
     switch (url) {
       case 'https://textdetection.com.ngrok.app':

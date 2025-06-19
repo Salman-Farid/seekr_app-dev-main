@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:seekr_app/application/device/device_provider.dart';
@@ -33,36 +32,25 @@ class ChangeDeviceSSidDialog extends HookConsumerWidget {
         TextButton(
           onPressed: () async {
             if (formKey.currentState!.validate()) {
-              try {
-                await ref
-                    .read(deviceRepoProvider)
-                    .setWifiName(textController.text);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          Text(Words.of(context)!.restartDeviceChangeSSID)));
+              await ref
+                  .read(deviceRepoProvider)
+                  .setWifiName(textController.text);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(Words.of(context)!.restartDeviceChangeSSID)));
 
-                  Navigator.of(context).pop();
-                }
-              } catch (e) {
-                Logger.e("Error occured while changing device ssid: $e");
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Error occured while changing device ssid: $e")));
-                  Navigator.of(context).pop();
-                }
+                Navigator.of(context).pop();
               }
             }
           },
-          child: Text(Words.of(context)!.ok),
+          child: Text( Words.of(context)!.ok),
         ),
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Colors.red),
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(Words.of(context)!.cancel),
+          child: Text( Words.of(context)!.cancel),
         ),
       ],
     );

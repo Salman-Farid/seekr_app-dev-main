@@ -7,7 +7,6 @@ import 'package:seekr_app/application/device/device_provider.dart';
 import 'package:seekr_app/application/device/museum/device_museum_provider.dart';
 import 'package:seekr_app/application/settings_provider.dart';
 import 'package:seekr_app/domain/device/device_action_type.dart';
-import 'package:seekr_app/localization/localization_type.dart';
 
 class MuseumSelectionWidget extends HookConsumerWidget {
   final Socket socket;
@@ -23,7 +22,7 @@ class MuseumSelectionWidget extends HookConsumerWidget {
     final enableTTs = ref.watch(settingsProvider).requireValue.enableTTs;
 
     ref.listen(
-      deviceEventStreamProvider,
+      deviceEventStreamProvider(socket),
       (previous, next) {
         if (next.hasValue &&
             previous?.value != next.value &&
@@ -33,29 +32,25 @@ class MuseumSelectionWidget extends HookConsumerWidget {
           switch (action) {
             case DeviceActionType.switchToNextMode:
               if (enableTTs) {
-                ref
-                    .read(audioRepoProvider)
-                    .playText(text: Words.of(context)!.ymca);
+                ref.read(audioRepoProvider).playText(text: "YMCA museum");
               }
 
               break;
             case DeviceActionType.switchToPreviousMode:
               if (enableTTs) {
-                ref
-                    .read(audioRepoProvider)
-                    .playText(text: Words.of(context)!.ymca);
+                ref.read(audioRepoProvider).playText(text: "YMCA museum");
               }
               break;
             case DeviceActionType.capturePhoto:
               if (enableTTs) {
-                ref.read(audioRepoProvider).playText(
-                    text:
-                        Words.of(context)!.ymca + Words.of(context)!.selected);
+                ref
+                    .read(audioRepoProvider)
+                    .playText(text: "YMCA museum selected");
               }
               ref.read(museumProvider.notifier).update((state) {
                 return state.copyWith(
                   isMuseum: true,
-                  museumName: () => Words.of(context)!.ymca,
+                  museumName: () => "YMCA Museum",
                 );
               });
               break;
@@ -73,7 +68,7 @@ class MuseumSelectionWidget extends HookConsumerWidget {
       padding: const EdgeInsets.all(10),
       child: Center(
         child: Text(
-          Words.of(context)!.chooseMuseum,
+          "Please select a museum from the list:\n1. YMCA Museum",
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontFamily: 'Rounded_Elegance',

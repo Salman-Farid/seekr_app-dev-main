@@ -7,12 +7,11 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:seekr_app/application/background_state_provider.dart';
 import 'package:seekr_app/application/device/device_state.dart';
-import 'package:seekr_app/application/device/socket_provider.dart';
 import 'package:seekr_app/application/device_dio_provider.dart';
 import 'package:seekr_app/domain/device/device_action_type.dart';
+import 'package:seekr_app/domain/device/device_info.dart';
 import 'package:seekr_app/domain/device/i_device_repo.dart';
 import 'package:seekr_app/infrastructure/device_repo.dart';
-import 'package:seekr_app/infrastructure/fake_device_repo.dart';
 import 'package:seekr_app/main.dart';
 
 final showDevImageProcessProvider = AutoDisposeStateProvider<bool>((ref) {
@@ -20,13 +19,7 @@ final showDevImageProcessProvider = AutoDisposeStateProvider<bool>((ref) {
 });
 
 final deviceRepoProvider = Provider<IDeviceRepo>((ref) {
-  if (useFakeDevice) {
-    return FakeDeviceRepo(
-      controller: ref.read(fakeDeviceEventStreamControllerProvider),
-    );
-  } else {
-    return DeviceRepo(dio: ref.read(deviceDioProvider));
-  }
+  return DeviceRepo(dio: ref.read(deviceDioProvider));
 });
 
 final deviceBatteryStatusProvider = FutureProvider<int?>((ref) async {
@@ -39,10 +32,12 @@ final fakeDeviceEventStreamControllerProvider =
   ref.onDispose(() => controller.close());
   return controller;
 });
-
 final deviceEventStreamProvider =
-    AutoDisposeStreamProvider<DeviceAction>((ref) {
-  final socket = ref.watch(socketProvider).requireValue;
+    AutoDisposeStreamProviderFamily<DeviceAction, Socket>((ref, socket) {
+  final deviceState = ref.watch(deviceStateProvider);
+  if (deviceState.isFake) {
+    return ref.read(fakeDeviceEventStreamControllerProvider).stream;
+  }
   return ref.read(deviceRepoProvider).listenButtonPresses(
       socket: socket,
       isResumed: ref.watch(appStateProvider
@@ -50,11 +45,19 @@ final deviceEventStreamProvider =
 });
 
 final ensureDeviceCameraModeProvider = FutureProvider<void>((ref) async {
-  Logger.i('Switching device to photo mode');
-  return ref.read(deviceRepoProvider).initDevice();
+  final deviceState = ref.watch(deviceStateProvider);
+
+  if (!deviceState.isFake) {
+    Logger.i('Switching device to photo mode');
+    return ref.read(deviceRepoProvider).initDevice();
+  }
 });
 
 final devicePhotoProvider = AutoDisposeFutureProvider<File>((ref) async {
+  final deviceState = ref.watch(deviceStateProvider);
+  if (deviceState.isFake) {
+    return ref.read(deviceRepoProvider).getPhotoFromFakeDevice();
+  }
   return ref.read(deviceRepoProvider).getPhotoFromDevice();
 });
 
@@ -68,57 +71,73 @@ final deviceStateProvider =
 class DeviceNotifier extends Notifier<DeviceState> {
   @override
   DeviceState build() {
-    init();
-
+    if (Platform.isIOS) {
+      if (!useFakeDevice) {
+        init();
+      }
+    }
     return UncheckedState();
   }
 
   void init() async {
     final IDeviceRepo deviceRepo = ref.read(deviceRepoProvider);
-    final deviceInfo = await deviceRepo.getDeviceInfo();
+    final deviceInfo =
+        useFakeDevice ? DeviceInfo.example() : await deviceRepo.getDeviceInfo();
     state = ConnectedState(deviceInfo: deviceInfo);
     if (state is ConnectedState) {
       final timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-        final bool isResumed = ref.watch(appStateProvider
-            .select((value) => value == AppLifecycleState.resumed));
+        if (!state.isFake) {
+          final bool isResumed = ref.watch(appStateProvider
+              .select((value) => value == AppLifecycleState.resumed));
 
-        if (isResumed) {
-          try {
-            final deviceInfo = await deviceRepo.getDeviceInfo();
+          if (isResumed) {
+            try {
+              final deviceInfo = await deviceRepo.getDeviceInfo();
 
-            state = ConnectedState(deviceInfo: deviceInfo);
-          } on DioException catch (e) {
-            switch (e.type) {
-              case DioExceptionType.connectionTimeout:
-                state = DisconnectedState();
-              case DioExceptionType.sendTimeout:
-                state = DisconnectedState();
-              default:
-                state = ErrorState(error: e.error.toString());
+              state = ConnectedState(deviceInfo: deviceInfo);
+            } on DioException catch (e) {
+              switch (e.type) {
+                case DioExceptionType.connectionTimeout:
+                  state = DisconnectedState();
+                case DioExceptionType.sendTimeout:
+                  state = DisconnectedState();
+                default:
+                  state = ErrorState(error: e.error.toString());
+              }
+            } catch (e) {
+              state = ErrorState(error: e.toString());
             }
-          } catch (e) {
-            state = ErrorState(error: e.toString());
+          } else {
+            state = DisconnectedState();
           }
-        } else {
-          state = DisconnectedState();
         }
       });
       ref.onDispose(() => timer.cancel());
     }
   }
 
-  Future<void> checkManually() async {
-    await Future.delayed(const Duration(seconds: 2));
+  void toggleDeviceConnection() {
+    if (state is ConnectedState) {
+      state = DisconnectedState();
+    } else {
+      state = ConnectedState(deviceInfo: DeviceInfo.example());
+    }
+  }
 
-    try {
-      Logger.i('Checking device connectivity');
-      final deviceInfo = await ref.read(deviceRepoProvider).getDeviceInfo();
-      Logger.i('Device info while checking connectivity: $deviceInfo');
-      state = ConnectedState(deviceInfo: deviceInfo);
-    } catch (e) {
-      Logger.e('Error checking device connectivity: $e');
-      if (state is ConnectedState) {
-        state = DisconnectedState();
+  Future<void> checkManually() async {
+    Logger.i(state.isFake
+        ? 'Fake device, no need to check'
+        : 'Checking device connectivity manually');
+    if (Platform.isIOS && !state.isFake) {
+      try {
+        Logger.i('Checking device connectivity');
+        final deviceInfo = await ref.read(deviceRepoProvider).getDeviceInfo();
+        state = ConnectedState(deviceInfo: deviceInfo);
+      } catch (e) {
+        Logger.e('Error checking device connectivity: $e');
+        if (state is ConnectedState) {
+          state = DisconnectedState();
+        }
       }
     }
   }

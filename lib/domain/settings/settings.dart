@@ -34,14 +34,14 @@ extension CnvSpeed on VoiceSpeed {
 }
 
 extension CnvPitch on Pitch {
-  String label(Words words) {
+  String label() {
     switch (this) {
       case Pitch.high:
-        return words.high;
+        return 'High - 高';
       case Pitch.normal:
-        return words.normal;
+        return 'Normal - 正常';
       case Pitch.low:
-        return words.low;
+        return 'Low - 低';
     }
   }
 

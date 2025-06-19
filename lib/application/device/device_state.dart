@@ -2,7 +2,9 @@ import 'package:equatable/equatable.dart';
 
 import 'package:seekr_app/domain/device/device_info.dart';
 
-sealed class DeviceState {}
+sealed class DeviceState {
+  bool get isFake => this == ConnectedState(deviceInfo: DeviceInfo.example());
+}
 
 class UncheckedState extends DeviceState with EquatableMixin {
   @override

@@ -2,19 +2,10 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-enum ProcessType {
-  text,
-  depth,
-  scene,
-  supermarket,
-  museum,
-  bus,
-  object,
-  sceneLong,
-}
+enum ProcessType { text, depth, scene, supermarket, museum, bus, object }
 
 extension X on ProcessType {
-  String feature() {
+  String? feature() {
     switch (this) {
       case ProcessType.text:
         return 'TEXT_DETECTION';
@@ -22,8 +13,6 @@ extension X on ProcessType {
         return 'DEPTH_DETECTION';
       case ProcessType.scene:
         return 'SCENE_DETECTION';
-      case ProcessType.sceneLong:
-        return 'SCENE_LONG_DETECTION';
       case ProcessType.supermarket:
         return 'SUPERMARKET_MODE';
       case ProcessType.museum:
@@ -32,31 +21,6 @@ extension X on ProcessType {
         return 'BUS_MODE';
       case ProcessType.object:
         return 'OBJECT_DETECTION';
-    }
-  }
-}
-
-extension XY on String {
-  ProcessType processType() {
-    switch (this) {
-      case 'TEXT_DETECTION':
-        return ProcessType.text;
-      case 'DEPTH_DETECTION':
-        return ProcessType.depth;
-      case 'SCENE_DETECTION':
-        return ProcessType.scene;
-      case 'SCENE_LONG_DETECTION':
-        return ProcessType.sceneLong;
-      case 'SUPERMARKET_MODE':
-        return ProcessType.supermarket;
-      case 'MUSEUM_MODE':
-        return ProcessType.museum;
-      case 'BUS_MODE':
-        return ProcessType.bus;
-      case 'OBJECT_DETECTION':
-        return ProcessType.object;
-      default:
-        return ProcessType.scene;
     }
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
-import 'package:seekr_app/application/live_modes/bus_detection/camera_live_bus_detection_provider.dart';
+import 'package:seekr_app/application/bus_detection/camera_live_bus_detection_provider.dart';
+import 'package:seekr_app/application/image_process_provider.dart';
 import 'package:seekr_app/localization/localization_type.dart';
 
 class CameraBusDetectionPage extends HookConsumerWidget {
@@ -38,7 +41,7 @@ class CameraBusDetectionPage extends HookConsumerWidget {
                         )
                       : Center(
                           child: Text(
-                            'No bus detected',
+                            'Nothing detected',
                             style: TextTheme.of(context)
                                 .headlineLarge
                                 ?.copyWith(
@@ -53,34 +56,34 @@ class CameraBusDetectionPage extends HookConsumerWidget {
           Row(
             children: [
               // Expanded(child: SizedBox.shrink()),
-              // Expanded(
-              //     child: ElevatedButton(
-              //         onPressed: () async {
-              //           final image = await ImagePicker().pickImage(
-              //               source: ImageSource.gallery, imageQuality: 50);
-              //           if (image != null) {
-              //             Logger.i("Convert image to bytes");
-              //             final bytes = await image.readAsBytes();
-              //             Logger.i("Image size: ${bytes.length}");
-              //             Logger.i("Start OCR");
-              //             final ocr = await ref
-              //                 .read(imageProcessRepoProvider)
-              //                 .ocrFromImage(bytes);
+              Expanded(
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        final image = await ImagePicker().pickImage(
+                            source: ImageSource.gallery, imageQuality: 50);
+                        if (image != null) {
+                          Logger.i("Convert image to bytes");
+                          final bytes = await image.readAsBytes();
+                          Logger.i("Image size: ${bytes.length}");
+                          Logger.i("Start OCR");
+                          final ocr = await ref
+                              .read(imageProcessRepoProvider)
+                              .ocrFromImage(bytes);
 
-              //             Logger.i(ocr);
-              //           }
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //             elevation: 0,
-              //             padding: const EdgeInsets.symmetric(vertical: 30),
-              //             backgroundColor: Colors.red.shade200,
-              //             shape: const RoundedRectangleBorder(),
-              //             foregroundColor: Colors.white,
-              //             textStyle:
-              //                 Theme.of(context).textTheme.titleLarge?.copyWith(
-              //                       fontWeight: FontWeight.bold,
-              //                     )),
-              //         child: Text("Test"))),
+                          Logger.i(ocr);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 30),
+                          backgroundColor: Colors.red.shade200,
+                          shape: const RoundedRectangleBorder(),
+                          foregroundColor: Colors.white,
+                          textStyle:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                      child: Text("Test"))),
               Expanded(
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(

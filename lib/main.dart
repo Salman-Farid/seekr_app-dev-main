@@ -24,15 +24,7 @@ Future<void> main() async {
     return true;
   };
   HttpOverrides.global = SeekrHttpOverrides();
-  // final container = ProviderContainer();
-
-  runApp(ProviderScope(observers: [
-    // TalkerRiverpodObserver(
-    //   talker: container.read(talkerProvider),
-    // ),
-  ], child: const SeekrApp()));
-
-  // runApp(ProviderScope(child: const SeekrApp()));
+  runApp(ProviderScope(child: const SeekrApp()));
 }
 
 class SeekrHttpOverrides extends HttpOverrides {

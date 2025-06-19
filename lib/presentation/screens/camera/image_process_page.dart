@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:seekr_app/application/audio_provider.dart';
 import 'package:seekr_app/application/image_process_provider.dart';
 import 'package:seekr_app/application/settings_provider.dart';
+import 'package:seekr_app/application/talker_provider.dart';
 import 'package:seekr_app/domain/image_process/image_process_data.dart';
 import 'package:seekr_app/domain/image_process/image_process_page_param.dart';
 import 'package:seekr_app/localization/localization_type.dart';
@@ -29,7 +31,7 @@ class ImageProcessPage extends HookConsumerWidget {
             Logger.i("playing bg");
             ref.read(audioRepoProvider).playBgMusic();
 
-            // ref.read(eventLogFuncProvider(param.processType)).call();
+            ref.read(eventLogFuncProvider(param.processType)).call();
           }
         });
       });
@@ -41,18 +43,11 @@ class ImageProcessPage extends HookConsumerWidget {
           ref.read(audioRepoProvider).stopBgMusic(),
       child: Scaffold(
         body: ref.watch(imageCompressProvider(param.imagePath)).when(
-            data: (data) {
-              final locale = ref.watch(settingsProvider).requireValue.locale;
-              final languageCode =
-                  '${locale.languageCode}_${locale.countryCode}';
-
-              return ImageProcessWidget(
-                  data: ImageProcessData(
-                image: data,
-                processType: param.processType,
-                languageCode: languageCode,
-              ));
-            },
+            data: (data) => ImageProcessWidget(
+                    data: ImageProcessData(
+                  image: data,
+                  processType: param.processType,
+                )),
             error: (error, _) => Text(
                   'Image compress error: $error',
                   style: const TextStyle(color: Colors.red),

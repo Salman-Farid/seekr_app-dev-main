@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
@@ -35,61 +36,43 @@ class MuseumListPage extends StatelessWidget {
                   child: Text(Words.of(context)!.goBack)),
             ),
           ),
-          Text(Words.of(context)!.chooseMuseum,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Semantics(
-                label: Words.of(context)!.ymcaButton,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(),
-                  ),
-                  onPressed: () {
-                    context.push(MuseumProcessingPage.routePath);
-                  },
-                  child: Text('1. ${Words.of(context)!.ymca}'),
+          Expanded(
+            child: ListView(
+              children: [
+                CupertinoListSection.insetGrouped(
+                  header: const Text('Available Museums'),
+                  children: [
+                    CupertinoListTile(
+                      title: Text('YMCA'),
+                      onTap: () {
+                        context.push(MuseumProcessingPage.routePath);
+                      },
+                    ),
+                    CupertinoListTile(
+                      title: Text('Museum 2'),
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Coming soon!'),
+                          ),
+                        );
+                      },
+                    ),
+                    CupertinoListTile(
+                      title: Text('Museum 3'),
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Coming soon!'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           ),
-          // Expanded(
-          //   child: ListView(
-          //     children: [
-          //       CupertinoListSection.insetGrouped(
-          //         header: Text(Words.of(context)!.chooseMuseum),
-          //         children: [
-
-          //           CupertinoListTile(
-          //             title: Text('Museum 2'),
-          //             onTap: () {
-          //               ScaffoldMessenger.of(context).showSnackBar(
-          //                 const SnackBar(
-          //                   content: Text('Coming soon!'),
-          //                 ),
-          //               );
-          //             },
-          //           ),
-          //           CupertinoListTile(
-          //             title: Text('Museum 3'),
-          //             onTap: () {
-          //               ScaffoldMessenger.of(context).showSnackBar(
-          //                 const SnackBar(
-          //                   content: Text('Coming soon!'),
-          //                 ),
-          //               );
-          //             },
-          //           ),
-          //         ],
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

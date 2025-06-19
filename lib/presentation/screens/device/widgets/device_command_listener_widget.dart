@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -39,6 +37,7 @@ class DeviceCommandListener extends HookConsumerWidget {
         ref.read(audioRepoProvider).stopBgMusic();
       }
     });
+    final deviceState = ref.watch(deviceStateProvider);
     useEffect(() {
       if (Platform.isIOS) {
         Future.microtask(() async {
@@ -51,59 +50,41 @@ class DeviceCommandListener extends HookConsumerWidget {
       return null;
     }, []);
     final enableTTs = ref.watch(settingsProvider).requireValue.enableTTs;
-    final accessibleNavigation = MediaQuery.of(context).accessibleNavigation;
-    final debounce = useState<Timer?>(null);
 
     ref.listen(deviceImageProcessModeProvider, (previous, next) async {
       if (previous != next && lifeCycleState == AppLifecycleState.resumed) {
         final museumState = ref.watch(museumProvider);
 
-        if (next == ProcessType.text) {
+        if (next == ProcessType.text && !deviceState.isFake) {
           await ref.read(deviceRepoProvider).switchToHighResMode();
-        } else if (previous == ProcessType.text) {
+        } else if (previous == ProcessType.text && !deviceState.isFake) {
           await ref.read(deviceRepoProvider).switchToVGAResMode();
         }
+        final modeAnnounce = getProcessTypeAnnouncements(next, words);
         ref.read(audioRepoProvider).stopTextToSpeech();
-
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(modeAnnounce)));
+        }
         if (Platform.isIOS) {
           const backgroundChannel = MethodChannel('background_channel/ios');
           await backgroundChannel.invokeMethod('setSelectedMode', next.name);
         }
-        if (debounce.value?.isActive ?? false) debounce.value?.cancel();
-        debounce.value = Timer(const Duration(seconds: 1), () {
-          final currentMode = ref.read(deviceImageProcessModeProvider);
-          final modeAnnounce = getProcessTypeAnnouncements(currentMode, words);
-
-          if (enableTTs) {
-            final textToRead = currentMode == ProcessType.museum &&
-                    museumState.isMuseum &&
-                    museumState.museumName != null
-                ? words.modeSwitcedToYmca
-                : modeAnnounce;
-
-            if (accessibleNavigation) {
-              SemanticsService.announce(
-                textToRead,
-                TextDirection.ltr,
-              );
-            } else {
-              // Execute API call here
-              ref.read(audioRepoProvider).playText(
-                  text: currentMode == ProcessType.museum &&
-                          museumState.isMuseum &&
-                          museumState.museumName != null
-                      ? words.modeSwitcedToYmca
-                      : modeAnnounce);
-            }
-          }
-        });
+        if (enableTTs) {
+          ref.read(audioRepoProvider).playText(
+              text: next == ProcessType.museum &&
+                      museumState.isMuseum &&
+                      museumState.museumName != null
+                  ? 'Mode switched to ${museumState.museumName} mode'
+                  : modeAnnounce);
+        }
         if (next == ProcessType.bus && context.mounted) {
           context.push('/device-bus');
         }
       }
     });
     ref.listen(
-      deviceEventStreamProvider,
+      deviceEventStreamProvider(socket),
       (previous, next) {
         if (next.hasValue &&
             previous?.value != next.value &&
@@ -142,12 +123,6 @@ class DeviceCommandListener extends HookConsumerWidget {
               if (canProcess) {
                 ref.read(showDevImageProcessProvider.notifier).state = true;
                 ref.invalidate(devicePhotoProvider);
-              } else {
-                if (enableTTs) {
-                  ref
-                      .read(audioRepoProvider)
-                      .playText(text: Words.of(context)!.chooseMuseum);
-                }
               }
             case DeviceActionType.longPress:
               if (ref.watch(deviceImageProcessModeProvider) ==
@@ -159,15 +134,15 @@ class DeviceCommandListener extends HookConsumerWidget {
                   if (enableTTs) {
                     ref
                         .read(audioRepoProvider)
-                        .playText(text: words.museumDeactivated);
+                        .playText(text: "Museum mode deactivated");
                   }
                   ref.read(museumProvider.notifier).state =
                       const MuseumState(isMuseum: false, museumName: null);
                 } else {
                   if (enableTTs) {
-                    ref
-                        .read(audioRepoProvider)
-                        .playText(text: words.chooseMuseum);
+                    ref.read(audioRepoProvider).playText(
+                        text:
+                            "Museum mode activated, Please select a museum from the list");
                   }
                   ref.read(museumProvider.notifier).state =
                       const MuseumState(isMuseum: true);
@@ -212,7 +187,7 @@ class DeviceCommandListener extends HookConsumerWidget {
                   )
                 : Center(
                     child: Text(
-                      getProcessTypeName(deviceMode, words),
+                      deviceMode.name,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Rounded_Elegance',
@@ -225,32 +200,15 @@ class DeviceCommandListener extends HookConsumerWidget {
 String getProcessTypeAnnouncements(ProcessType type, Words words) {
   switch (type) {
     case ProcessType.text:
-      return words.modeText;
+      return words.textButtonDevice;
     case ProcessType.depth:
-      return words.modeDepth;
+      return words.depthButtonDevice;
     case ProcessType.scene:
-      return words.modeScene;
+      return words.scenebuttonDevice;
     case ProcessType.supermarket:
-      return words.modeSuperMarket;
+      return words.superMarketModeDevice;
     case ProcessType.museum:
-      return words.modeMuseum;
-    default:
-      return type.name;
-  }
-}
-
-String getProcessTypeName(ProcessType type, Words words) {
-  switch (type) {
-    case ProcessType.text:
-      return words.modeText;
-    case ProcessType.depth:
-      return words.modeDepth;
-    case ProcessType.scene:
-      return words.modeScene;
-    case ProcessType.supermarket:
-      return words.modeSuperMarket;
-    case ProcessType.museum:
-      return words.modeMuseum;
+      return 'Mode switched to Museum detection';
     default:
       return 'Mode switched to ${type.name} detection';
   }

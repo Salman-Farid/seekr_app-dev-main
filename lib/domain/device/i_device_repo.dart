@@ -13,6 +13,7 @@ abstract class IDeviceRepo {
   Future<void> initDevice();
 
   Future<File> getPhotoFromDevice();
+  Future<File> getPhotoFromFakeDevice();
 
   Future<void> deleteAllPhotos();
   Future<void> setWifiName(String name);

@@ -5,28 +5,22 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import "package:path/path.dart";
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:path_provider/path_provider.dart' as path;
-import 'package:seekr_app/domain/event/event.dart';
-import 'package:seekr_app/domain/event/event_log.dart';
 import 'package:seekr_app/domain/image_process/detection_result.dart';
 
 import 'package:seekr_app/domain/image_process/i_image_process_repo.dart';
 import 'package:seekr_app/domain/image_process/image_process_data.dart';
-import 'package:seekr_app/domain/image_process/live_text_result.dart';
 import 'package:seekr_app/domain/image_process/ocr.dart';
 
 class ImageProcessRepo extends IImageProcessRepo {
   final Client client;
   final MethodChannel channel;
-  final String? session;
   ImageProcessRepo(
       {required this.client,
-      this.channel = const MethodChannel('background_channel/ios'),
-      required this.session});
+      this.channel = const MethodChannel('background_channel/ios')});
   @override
   Future<File> compressImage(String imagePath) async {
     final result = await FlutterImageCompress.compressWithFile(
@@ -61,54 +55,14 @@ class ImageProcessRepo extends IImageProcessRepo {
             ..files.add(
               multipartFile,
             );
-      if (data.processType == ProcessType.scene) {
-        request.headers['mode'] = "Scene Short";
-      } else if (data.processType == ProcessType.sceneLong) {
-        request.headers['mode'] = "Scene Detailed";
-      }
       final response = await client.send(request);
       final byteString = await response.stream.bytesToString();
       Logger.i(byteString);
-      final result = jsonDecode(byteString);
-      Logger.i(result);
-      await sendEventLog(
-          processType: data.processType,
-          event: Event(
-            title: 'IMAGE-PROCESS-RESULT',
-            details: result,
-          ));
-      return result;
+      Logger.i(jsonDecode(byteString));
+      return jsonDecode(byteString);
     } catch (e) {
       Logger.e(e);
-      await sendEventLog(
-          processType: data.processType,
-          event: Event(
-            title: 'IMAGE-PROCESS-ERROR',
-            details: e.toString(),
-          ));
-      return 'SERVER_BUSY';
-    }
-  }
-
-  Future<void> sendEventLog(
-      {required ProcessType processType, required Event event}) async {
-    if (session != null) {
-      final eventLog = EventLog(
-        session: session!,
-        feature: processType.feature(),
-        event: event.toMap(),
-      );
-      try {
-        await http.post(
-            Uri.parse('https://seekr-analytics.squadhead.workers.dev/event'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: eventLog.toJson());
-        Logger.json(eventLog.toJson());
-      } catch (e) {
-        Logger.e('Failed to send event log: $e');
-      }
+      return 'Nothing detected';
     }
   }
 
@@ -173,9 +127,7 @@ class ImageProcessRepo extends IImageProcessRepo {
       case ProcessType.object:
         return 'https://yolov3-flask1-wx2bjo7cia-uc.a.run.app/debug';
       case ProcessType.scene:
-        return "https://supermarket.ngrok.app/scene";
-      case ProcessType.sceneLong:
-        return "https://supermarket.ngrok.app/scene";
+        return 'https://image-792768179921.us-central1.run.app';
       case ProcessType.bus:
         return 'https://busdetection-wx2bjo7cia-uc.a.run.app/video';
       case ProcessType.depth:
@@ -304,38 +256,5 @@ class ImageProcessRepo extends IImageProcessRepo {
       return null;
     }
     return text;
-  }
-
-  @override
-  Future<String?> objectDetectFromImage(Uint8List imageBytes) async {
-    if (Platform.isIOS) {
-      try {
-        final String result = await channel
-            .invokeMethod('processObstacleImage', {'image': imageBytes});
-        return result;
-      } catch (e) {
-        Logger.e(e);
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  @override
-  Future<LiveTextResult?> textDetectFromImage(Uint8List imageBytes) async {
-    if (Platform.isIOS) {
-      try {
-        final result = await channel
-            .invokeMethod('processTextDetection', {'image': imageBytes});
-        Logger.i('result: $result');
-        return LiveTextResult.fromJson(jsonEncode(result));
-      } catch (e) {
-        Logger.e(e);
-        return null;
-      }
-    } else {
-      return null;
-    }
   }
 }

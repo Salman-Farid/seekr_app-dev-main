@@ -21,19 +21,19 @@ class FakeDeviceWrapper extends HookConsumerWidget {
                 children: [
                   TextButton.icon(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor:
-                          deviceState is ConnectedState ? Colors.green : null,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                     ),
                     onPressed: () {
-                      ref.read(deviceStateProvider.notifier).checkManually();
+                      ref
+                          .read(deviceStateProvider.notifier)
+                          .toggleDeviceConnection();
                     },
                     icon: deviceState is ConnectedState
-                        ? Icon(Icons.circle)
+                        ? Icon(Icons.link_off_sharp)
                         : Icon(Icons.refresh),
                     label: deviceState is ConnectedState
-                        ? Text('Connected')
+                        ? Text('Disconnect')
                         : Text('Connect'),
                   ),
                   TextButton.icon(

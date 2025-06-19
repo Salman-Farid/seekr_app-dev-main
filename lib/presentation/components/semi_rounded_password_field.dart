@@ -6,8 +6,6 @@ class SemiRoundedPasswordField extends HookConsumerWidget {
   final TextEditingController passwordController;
   final String text, showLabel, hideLabel;
   final bool enabled;
-  final FocusNode? focusNode;
-  final void Function(String)? onFieldSubmitted;
 
   const SemiRoundedPasswordField(
       {super.key,
@@ -15,8 +13,6 @@ class SemiRoundedPasswordField extends HookConsumerWidget {
       required this.text,
       required this.showLabel,
       required this.hideLabel,
-      this.focusNode,
-      this.onFieldSubmitted,
       this.enabled = true});
 
   @override
@@ -24,7 +20,6 @@ class SemiRoundedPasswordField extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final obscureText = useState(false);
     return TextFormField(
-      focusNode: focusNode,
       enabled: enabled,
       validator: (value) {
         Pattern pattern =
@@ -36,7 +31,6 @@ class SemiRoundedPasswordField extends HookConsumerWidget {
           return null;
         }
       },
-      onFieldSubmitted: onFieldSubmitted,
       controller: passwordController,
       obscureText: obscureText.value,
       decoration: InputDecoration(

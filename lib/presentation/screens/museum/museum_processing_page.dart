@@ -88,7 +88,7 @@ class MuseumProcessingPage extends HookConsumerWidget {
                       isCameraBusy.value = false;
                     }
                   },
-                  child: Text(Words.of(context)!.takeAPicture)),
+                  child: Text('Process Image')),
             ),
           ),
         ],

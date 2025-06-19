@@ -7,87 +7,43 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:seekr_app/application/audio_provider.dart';
 import 'package:seekr_app/application/device/device_provider.dart';
 import 'package:seekr_app/application/device/socket_provider.dart';
+import 'package:seekr_app/application/settings_provider.dart';
 import 'package:seekr_app/domain/device/device_action_type.dart';
 import 'package:seekr_app/domain/image_process/image_process_data.dart';
-import 'package:seekr_app/domain/image_process/image_process_page_param.dart';
 import 'package:seekr_app/localization/localization_type.dart';
-import 'package:seekr_app/presentation/screens/camera/image_process_page.dart';
 import 'package:seekr_app/presentation/screens/camera/reuse_camera_page.dart';
 
 class ResultTextWidget extends HookConsumerWidget {
-  final ImageProcessData data;
   final String translatedText;
+  final ProcessType type;
   final bool fromDevice;
   const ResultTextWidget({
     super.key,
     required this.translatedText,
+    required this.type,
     required this.fromDevice,
-    required this.data,
   });
 
   @override
   Widget build(BuildContext context, ref) {
-    final type = data.processType;
     final isPaused = useState(false);
+    final enableTTs = ref.watch(settingsProvider).requireValue.enableTTs;
+    final accessibleNavigation = MediaQuery.of(context).accessibleNavigation;
 
+    useEffect(() {
+      if (enableTTs && !accessibleNavigation) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(audioRepoProvider).playText(text: translatedText);
+        });
+      }
+      return null;
+    }, [translatedText]);
     return PopScope(
       onPopInvokedWithResult: (v, _) =>
           ref.read(audioRepoProvider).stopTextToSpeech(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (type == ProcessType.scene && !fromDevice)
-            SizedBox(
-              width: double.infinity,
-              child: Semantics(
-                sortKey: const OrdinalSortKey(3),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        backgroundColor: Colors.blue.shade200,
-                        shape: const RoundedRectangleBorder(),
-                        foregroundColor: Colors.white,
-                        textStyle:
-                            Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                )),
-                    onPressed: () {
-                      context.replace(ImageProcessPage.routePath,
-                          extra: ImageProcessPageParam(
-                            imagePath: data.image.path,
-                            processType: ProcessType.sceneLong,
-                          ));
-                    },
-                    child: Text("Read Long Description")),
-              ),
-            )
-          else if (type == ProcessType.sceneLong && !fromDevice)
-            SizedBox(
-              width: double.infinity,
-              child: Semantics(
-                sortKey: const OrdinalSortKey(3),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        backgroundColor: Colors.blue.shade200,
-                        shape: const RoundedRectangleBorder(),
-                        foregroundColor: Colors.white,
-                        textStyle:
-                            Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                )),
-                    onPressed: () {
-                      context.replace(ImageProcessPage.routePath,
-                          extra: ImageProcessPageParam(
-                            imagePath: data.image.path,
-                            processType: ProcessType.scene,
-                          ));
-                    },
-                    child: Text("Read Short Description")),
-              ),
-            ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -98,12 +54,12 @@ class ResultTextWidget extends HookConsumerWidget {
                       if (isPaused.value) {
                         await ref
                             .read(audioRepoProvider)
-                            .speakTts(text: translatedText);
-
+                            .tts
+                            .speak(translatedText);
                         Logger.i('resuming tts');
                         isPaused.value = false;
                       } else {
-                        await ref.read(audioRepoProvider).pauseTts();
+                        await ref.read(audioRepoProvider).tts.pause();
                         Logger.i('pausing tts');
                         isPaused.value = true;
                       }
@@ -146,37 +102,10 @@ class ResultTextWidget extends HookConsumerWidget {
                 ),
               ReplayButton(
                 text: translatedText,
-                processType: type,
+                type: type,
               )
             ],
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: Semantics(
-              sortKey: const OrdinalSortKey(2),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 30),
-                      backgroundColor: Colors.blue.shade200,
-                      shape: const RoundedRectangleBorder(),
-                      foregroundColor: Colors.white,
-                      textStyle:
-                          Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              )),
-                  onPressed: () {
-                    if (fromDevice) {
-                      ref.read(showDevImageProcessProvider.notifier).state =
-                          false;
-                      ref.read(audioRepoProvider).stopTextToSpeech();
-                    } else {
-                      context.pop();
-                    }
-                  },
-                  child: Text(Words.of(context)!.goBack)),
-            ),
-          ),
+          )
         ],
       ),
     );
@@ -185,19 +114,15 @@ class ResultTextWidget extends HookConsumerWidget {
 
 class ReplayButton extends HookConsumerWidget {
   final String text;
-  final ProcessType processType;
+  final ProcessType type;
 
-  const ReplayButton({
-    super.key,
-    required this.text,
-    required this.processType,
-  });
+  const ReplayButton({super.key, required this.text, required this.type});
 
   @override
   Widget build(BuildContext context, ref) {
     final lifeCycleState = useAppLifecycleState();
     ref.watch(socketProvider).whenData((socket) => ref.listen(
-          deviceEventStreamProvider,
+          deviceEventStreamProvider(socket),
           (previous, next) {
             if (next.hasValue &&
                 previous?.value != next.value &&
@@ -205,10 +130,8 @@ class ReplayButton extends HookConsumerWidget {
               final action = next.value!.action;
               switch (action) {
                 case DeviceActionType.longPress:
-                  if (processType != ProcessType.scene) {
-                    Logger.i("replay");
-                    ref.read(audioRepoProvider).playText(text: text);
-                  }
+                  Logger.i("replay");
+                  ref.read(audioRepoProvider).playText(text: text);
                   break;
                 default:
                   break;

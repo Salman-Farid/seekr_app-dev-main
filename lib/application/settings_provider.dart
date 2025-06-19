@@ -6,12 +6,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:seekr_app/application/audio_provider.dart';
 import 'package:seekr_app/application/shared_pref_provider.dart';
 import 'package:seekr_app/domain/settings/i_settings_repo.dart';
 import 'package:seekr_app/domain/settings/settings.dart';
 import 'package:seekr_app/infrastructure/settings_repo.dart';
 
-final settingsRepoProvider = FutureProvider<ISettingsRepo>((ref) async {
+final localizationRepoProvider = FutureProvider<ISettingsRepo>((ref) async {
   final sharedPref = await ref.watch(sharedPreferecesProvider.future);
   return SettingsRepo(sharedPreferences: sharedPref);
 });
@@ -27,24 +28,24 @@ class LocalizationNotifier extends AsyncNotifier<Settings> {
     } else {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     return localeRepo.getCurrentSettings();
   }
 
   Future<void> changeLocace(Locale locale) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.changeLocale(locale);
     state = AsyncData(localeRepo.getCurrentSettings());
   }
 
   Future<void> changePitch(Pitch pitch) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setPitch(pitch);
     state = AsyncData(localeRepo.getCurrentSettings());
   }
 
   Future<void> changeVoiceSpeed(VoiceSpeed speed) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setVoiceSpeed(speed);
     if (Platform.isIOS) {
       const backgroundChannel = MethodChannel('background_channel/ios');
@@ -54,7 +55,7 @@ class LocalizationNotifier extends AsyncNotifier<Settings> {
   }
 
   Future<void> changeBgMusic(bool value) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setBgMusic(value);
     if (Platform.isIOS) {
       const backgroundChannel = MethodChannel('background_channel/ios');
@@ -64,24 +65,31 @@ class LocalizationNotifier extends AsyncNotifier<Settings> {
   }
 
   Future<void> changeTTsStatus(bool value) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setTTsStatus(value);
     state = AsyncData(localeRepo.getCurrentSettings());
   }
 
   Future<void> changeCameraView(bool value) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setCameraView(value);
     state = AsyncData(localeRepo.getCurrentSettings());
   }
 
   Future<void> changeTextScale(double value) async {
-    final localeRepo = await ref.watch(settingsRepoProvider.future);
+    final localeRepo = await ref.watch(localizationRepoProvider.future);
     await localeRepo.setTextScale(value);
     state = AsyncData(localeRepo.getCurrentSettings());
   }
 }
 
+final translationProvider =
+    AutoDisposeFutureProviderFamily<String, TranslationArg>((ref, arg) async {
+  final localeRepo = await ref.watch(localizationRepoProvider.future);
+
+  return localeRepo.translateText(
+      source: arg.source, shouldTranslate: arg.shouldTranslate);
+});
 
 
 // if (Platform.isIOS) {

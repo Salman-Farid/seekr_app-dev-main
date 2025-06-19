@@ -1,10 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:seekr_app/application/audio_provider.dart';
 import 'package:seekr_app/application/camera/camera_controller_provider.dart';
 import 'package:seekr_app/application/settings_provider.dart';
+import 'package:seekr_app/presentation/screens/camera/camera_bus_detection_page.dart';
 import 'package:seekr_app/presentation/screens/camera/widgets/camera_buttons.dart';
 import 'package:seekr_app/localization/localization_type.dart';
 
@@ -57,7 +59,17 @@ class CameraBody extends HookConsumerWidget {
                 ),
               ),
         error: (error, _) => Center(
-              child: Text(error.toString()),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(error.toString()),
+                  ElevatedButton(
+                      onPressed: () {
+                        context.push(CameraBusDetectionPage.routePath);
+                      },
+                      child: Text("Refresh"))
+                ],
+              ),
             ),
         loading: () => const Center(
               child: CircularProgressIndicator(),

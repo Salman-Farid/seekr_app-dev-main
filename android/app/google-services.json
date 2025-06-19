@@ -14,30 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "146426615213-kb1grdaennfmf0fmpdpu9eianf6ihg84.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vidilabs.seekr",
-            "certificate_hash": "646cea236c8adf1b31c95153382c69b1e8fc6fc3"
-          }
-        },
-        {
-          "client_id": "146426615213-nu9cltgcg3d35ihn2h0n1faf9fsvl225.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vidilabs.seekr",
-            "certificate_hash": "d6aa867bd1a328ce425d83d5040f044b56022594"
-          }
-        },
-        {
-          "client_id": "146426615213-nuh1b6rf1458nbgmm25douvdib7l5uso.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vidilabs.seekr",
-            "certificate_hash": "3f280dfb023f8940e7ff16c8fc85469c3255f085"
-          }
-        },
-        {
           "client_id": "146426615213-lb0aqq1ugsc9688odi3f15t0iolkh867.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -111,22 +87,6 @@
           "android_info": {
             "package_name": "com.vidilabs.seekrapp",
             "certificate_hash": "ee9573a562979c3d7f29d0fc5a6b564233eb0a5d"
-          }
-        },
-        {
-          "client_id": "146426615213-lsnebvi2g93r7qmrnnn2cii2dc9355g9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vidilabs.seekrapp",
-            "certificate_hash": "1c103276e8f38b7b0f53d426e187f55f25afa596"
-          }
-        },
-        {
-          "client_id": "146426615213-st05ption408t8qrl2eptvqnu12p95qf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vidilabs.seekrapp",
-            "certificate_hash": "3f280dfb023f8940e7ff16c8fc85469c3255f085"
           }
         },
         {
